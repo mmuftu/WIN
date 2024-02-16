@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<settings>
+		<key>ServerIP</key>
+		<value>192.168.173.227</value>
+	</settings>
+	<settings>
+		<key>Port</key>
+		<value>6000</value>
+	</settings>
+	<settings>
+		<key>ServerIP_MA</key>
+		<value>192.168.173.227</value>
+	</settings>
+	<settings>
+		<key>Port_MA</key>
+		<value>5999</value>
+	</settings>
+</config>

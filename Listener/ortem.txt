@@ -1,0 +1,180 @@
+﻿Xtakip-MX (Ortem)
+----------------------------------------------------------------------------------
+MSISDN	CEpTelNo
+IMEI	Cihazların kimlik numarası
+IMSI	Simkart kimlik numarası
+----------------------------------------------------------------------------------
+CIHAZID= 15 char (imei)+ 2char(cihaz tipi)
+----------------------------------------------------------------------------------
+Server->ATC # ile başlar
+ATC->Server @ ile başlar
+;  (Splitter)  ile veriler arası ayıraç kullanılır
+! İle komut satırı biter
+----------------------------------------------------------------------------------
+#DU!  //cihaz bilgileri sorgulama
+
+cevap
+
+86656706265615312-30102312ort-2048-M12A C-S-R:0-1-0 RS:25 S:2-1 G:0-95 OF:EA2-EA2 OFR:0-0 AP:Mitsuzi44-- Q:26
+
+Açıkalama
+
+866567062656153 12 ;Cihazın imei numarası (sonda bulunan 12 ise cihaz tipi uzantısı)
+
+30102312ort ;Yazılım tarihi
+
+2048   ; Donanım özelliklerini ifade eder.
+
+M12A ; Cihaz modeli
+
+C-S-R:0-1-0   ; Calisma Modu-Soket Durumu-Roaming Durumu  1 olması durumunda aktif,0 olması durumunda pasif anlamına gelmektedir.
+
+RS:25 : Cihazın resetlenme sayısı
+
+S:2-1 : Alınan-Gönderilen sms sayısı
+
+G:0-95:Alınan-Gönderilen gprs sayısı
+
+OF : Yurt içi offline kayıt sayısı(hex)
+
+OFR:Yurtdışı offline kayıt sayısı (hex)
+
+Q : Anten seviyesi (max 31)
+-----------------------------------------------------------------------------
+
+#OX;?;0!  //tanımlı olan olan ıp,port bilgisini sorgula
+#OX;1234;0;37.75.11.73;14433!  // ıp-port bilgilerini değiştirebilirsiniz.
+-----------------------------------------------------------------------------
+Gsensör için , komut yapılarını aşağıda ki sıra ile gönderebilirsiniz.
+
+#DW;1234;D1!   => Gsensör özelliğini açar.
+#HX;1234;119;1;0;0!  => G sensör için eklenen yeni kasis alarmı, savrulma alarmı, hızlanma ivme ve yavaşlama ivme alarmlarını aktif etmek için kullanılır.
+
+#CX;1234;8;0;A;0;A;0;20;20;20;20;0;1111! => G sensor zamanlama ayarları
+#CX;1234;9;4;0;1;A;5;5;5;5;8;4;0000! => Gsensör değerlerini ayarları
+
+Bu komutlar sonrası cihazda otomatik yön belirleme algoritmasının çalışması için aşağıda ki komut yapısını kullanabilirsiniz.
+#CX;1234;10;RESET;0;0;0;0;0;0;0;0;0!
+Bu komut gönderimi sonrası , cihaz önce kontağın kapanmasını bekler. Kontak kapatıldıktan yaklaşık 1 dakika sonra yeryüzünü tespit eder. 
+Tekrar kontak açılınca 2 dakika sonra da araç gidiş yönünü tespit edip kaydeder. 
+---
+@L03A86243005451355712230124130423040473808029306444000200010CAD0000870F6037001A!   => Kasis alarmı
+@L03A862430054513557122301241304270404737830293060670002000109F60000871270380005!   => Savrulma,viraj alarmı
+@L038862430054513557122301241309560404753610293060510002000103C300008A05403904!  => Hızlanma alarmı
+@L0388624300545135571223012413093304047454802930592100020001000000008800303A04!  => Yavaşlama alarmı
+
+•	Alarm değerleri desimale çevrilerek 0,0625 ile çarpılır ise ivmenin G şiddeti bulunur.
+----------------------------------------------------------------------------
+Periyot Ayar Örnek (PX)
+Komut,Şifre,Seçenek,Hareketli Veri Sıklığı,SMS Mesaj Sıklığı,Durma Mesaj Sıklığı,Offline Mesaj Sıklığı,Mesaj Mesafe Periyodu Çarpanı,RequestID
+#PX;1234;0;2;30;40;5;0;RequestID!  (Periyot Ayarı)
+
+Cevap
+
+Komut,CIHAZID,Seçenek,Hareketli Veri Sıklığı,SMS Mesaj Sıklığı,Durma Mesaj Sıklığı,Offline Mesaj Sıklığı,Mesaj Mesafe Periyodu RequestID
+----------------------------------------------------------------------------
+Hassas Kontrol Noktaları Tanımı (Alan Tanımları)
+----------------------------------------------------------------------------
+Temel Ayar (HX)  117 farklı ayar var
+----------------------------------------------------------------------------
+Parametre Ayarları (CX)  108 farklı ayar var
+----------------------------------------------------------------------------
+Genel Amaçlı Komutlar (MX)  132 farklı ayar var
+----------------------------------------------------------------------------
+Araç Takip ->>>>> SUNUCU
+
+///////////////////////////////////
+Bağlanma mesajı ( C ): Cihaz sunucuya ilk bağlandığında bir defaya mahsus atılır. İçinde yazılım versiyonu ve takılı aksesuarlar bildirilir.
+
+@,C,CihazID,Protokol,IMSI,Versiyon Bilgi,!
+@C;xxxxxxxxxxxxxxx00;M4X;IMSI;24051081-1!
+////////////////////////////////
+
+///////////////////////////////
+Bağlantı kontrol mesajı ( P ): Cihazın GPRS mesaj sıklığı şebekenin zaman aşımı süresinin üstünde ise, şebekenin bağlantıyı kesmemesi için gönderilir.
+
+@,P,CihazID,!
+@P;xxxxxxxxxxxxxxxx00!
+/////////////////////////////////
+
+/////////////////////////////////
+Konum Durum Bilgisi ( L ): Cihazdan periyodik olarak atılan veri tipidir. Kontak durumuna göre istenen periyotlarda atılmaya devam eder. Offline kayıt içinde bu kayıt tipi tutulur. Mesaj tipine ve alarm durumuna göre boyu değişebilmektedir.
+
+@,L,Paket Bilgisi(Hex),CihazID,Paket,!
+@L036xxxxxxxxxxxxxxx001502101512160404819620292834620000000B0000000000040000!
+/////////////////////////////////
+
+/////////////////////////////////
+Sefer paketi ( S ): Cihazın kontak açılımı ile kontak kapatılması arasındaki veriler toplanır.
+
+@,S,CihazID,Paket,!
+@S;35998300038372340;A,090910,141420.00,4048.19518,N,02928.34703,E;A,090910,141520.00,4048.19518,N,02928.34703,E;15;52.25;60;15;2,4,1;!
+////////////////////////////////
+
+////////////////////////////////
+Yurtdışı Konum&Durum ( Y ): Cihaz yurtdışında çalışıyor ise bilgiler bu formatta gönderilir.
+@,Y,Paket,!
+@Y18021400000000823D75819DD40014028005400040000000400040000000400040000300C009C0020000400040000000C00140000300400140000100400040000100!
+////////////////////////////////
+
+-----------------------------------------------------------------------------------
+APN Ayar (#AP)
+
+Komut,Şifre,APN Adı,APN Kullanıcı Adı,APN Şifre, RequestID
+#AP;1234;telsim;telsim;telsim;RequestID!
+
+Cevap
+
+Komut,CihazID,APN Adı,APN Kullanıcı Adı,APN Şifre, RequestID
+@AP;CihazID;telsim;telsim;telsim;RequestID!
+
+--------------------------------------------------------------------------------------
+
+Sunucu-Şifre Ayar(OX)
+
+Komut,Şifre,Seçenek,Parametre1,Parametre 2, RequestID
+#OX;1234;0;78.189.19.252;4323;RequestID!
+
+cevap
+Komut,Cihaz ID,Secenek,Parametre1,Parametre2,RequestID
+@OX;CihazID;0;78.189.19.252;4323;RequestID!
+
+---------------------------------------------------------------------------------------
+
+Yazılım Güncelleme(#DW)
+
+#DW;1234;1; RequestID!
+
+Cevap
+@DW;CihazID;1;RequestID!
+
+-----------------------------------------------------------------------------------------
+
+SMS Numara Kontrolü
+
+Örnek Mesaj (Sunucu  ATC): #HX;1234;28;05301234567;05302134567;05303214567;RequestID!( SMS izinli numaraları ayarla )
+
+Örnek Cevap Mesajı ( ATC  Sunucu ): @HX;CIHAZID;28;05301234567;05302134567;05303214567;RequestID!
+
+
+-------------------------------------------------------------------------------------------
+
+Arayan Numara Kontrolü
+Örnek Mesaj (Sunucu  ATC): #HX;1234;118;05301234567;05302134567;05303214567;RequestID!( Arama izinli numaraları ayarla )
+Örnek Cevap Mesajı ( ATC  Sunucu ): @HX;CIHAZID;118;05301234567;05302134567;05303214567;RequestID!
+
+-------------------------------------------------------------------------------------------
+
+Profil Güncelleme
+Örnek Mesaj (Sunucu  ATC): #HX;1234;67;Prof;0;0;RequestID! ( Prof adlı profil dosyasını indir. )
+Örnek Cevap Mesajı ( ATC  Sunucu ): @HX;CIHAZID;67;Prof.pfl;0;0;RequestID!
+
+--------------------------------------------------------------------------------------------
+
+ID Sabitleme
+
+Örnek Mesaj (Sunucu  ATC): #HX;1234;127;fix;1;0;RequestID! ( ID sabitleme aktifleştirildi )
+Örnek Cevap Mesajı ( ATC  Sunucu ): @HX;CIHAZID;127;1;0;0;RequestID!
+
+----------------------------------------------------------------------------------------------
+
