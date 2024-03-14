@@ -6,19 +6,23 @@ namespace ATC_Management
     public partial class FormMain : Form
     {
         public static Global.Global.Config_XML config_xml;
+
+        #region FormMain
         public FormMain()
         {
             InitializeComponent();
         }
+        #endregion
 
-
-
+        #region FormMain_Load
         private void FormMain_Load(object sender, EventArgs e)
         {
             config_xml = Global.Global.Config_XML.Create();
 
         }
+        #endregion
 
+        #region Gonder
         static void Gonder(string mesaj)
         {
             try
@@ -39,26 +43,35 @@ namespace ATC_Management
             }
             catch { }
         }
+        #endregion
 
+        #region toolStripMenuItem_CihazBilgileriSorgula_Click
         private void toolStripMenuItem_CihazBilgileriSorgula_Click(object sender, EventArgs e)
         {
             Gonder("#DU!");
         }
+        #endregion
 
+        #region ýPPortSorgulaToolStripMenuItem_Click
         private void ýPPortSorgulaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Gonder("#OX;?;0!");
         }
+        #endregion
 
+        #region sunucuSifreBilgileriGönderToolStripMenuItem_Click
         private void sunucuSifreBilgileriGönderToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             Gonder("#OX;1234;0;188.119.59.151;6000;" + Global.Global.RandomRequestID(8));
         }
+        #endregion
 
+        #region apnAyariGonderToolStripMenuItem_Click
         private void apnAyariGonderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Gonder("#AP;1234;telsim;telsim;telsim;" + Global.Global.RandomRequestID(8));
         }
+        #endregion
     }
 }

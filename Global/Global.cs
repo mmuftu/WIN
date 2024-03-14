@@ -5,19 +5,23 @@ namespace Global
 {
     public class Global
     {
+        #region Config_XML
         public class Config_XML
         {
             public string ServerIP = "";
             public string ServerPort = "";
             public string ServerIP_MA = "";
             public string ServerPort_MA = "";
+            public string ConStrCompany = "";
 
-            public Config_XML(string serverIP, string serverPort, string serverIP_MA, string serverPort_MA)
+
+            public Config_XML(string serverIP, string serverPort, string serverIP_MA, string serverPort_MA, string conStrCompany)
             {
                 ServerIP = serverIP;
                 ServerPort = serverPort;
                 ServerIP_MA = serverIP_MA;
                 ServerPort_MA = serverPort_MA;
+                ConStrCompany = conStrCompany;
             }
             public Config_XML()
             {
@@ -38,6 +42,7 @@ namespace Global
                     string _ServerPort = "";
                     string _ServerIP_MA = "";
                     string _ServerPort_MA = "";
+                    string _ConStrCompany = "";
                     foreach (XmlNode node in nodes)
                     {
                         String key = node.SelectSingleNode("key").InnerText;
@@ -59,9 +64,13 @@ namespace Global
                         {
                             _ServerPort_MA = value;
                         }
+                        else if (key == "ConStrCompany")
+                        {
+                            _ConStrCompany = value;
+                        }
                     }
 
-                    config_xml = new Config_XML(_ServerIP, _ServerPort, _ServerIP_MA, _ServerPort_MA);
+                    config_xml = new Config_XML(_ServerIP, _ServerPort, _ServerIP_MA, _ServerPort_MA, _ConStrCompany);
 
 
                 }
@@ -73,7 +82,9 @@ namespace Global
                 return config_xml;
             }
         }
+        #endregion
 
+        #region RandomRequestID
         public static string RandomRequestID(int uzunluk)
         {
             // Rastgele ID oluşturmak için bir rastgele sayı üreteci oluşturuyoruz
@@ -97,5 +108,6 @@ namespace Global
             string generatedId = idBuilder.ToString();
             return generatedId;
         }
+        #endregion
     }
 }

@@ -85,7 +85,7 @@
             Name = "FormMain";
             Text = "Listener";
             FormClosing += FormMain_FormClosing;
-            Load += Form1_Load;
+            Load += FormMain_Load;
             ResumeLayout(false);
             PerformLayout();
         }

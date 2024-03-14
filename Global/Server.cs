@@ -12,6 +12,8 @@ namespace Global
         public static List<Thread> clientThreads = new List<Thread>();
         public static List<TcpClient> clientList = new List<TcpClient>();
         public static List<string> EndPointList = new List<string>();
+
+        #region Start
         public void Start()
         {
             try
@@ -41,6 +43,9 @@ namespace Global
 
             }
         }
+        #endregion
+
+        #region HandleClient
         void HandleClient(TcpClient client, Thread calisan)
         {
             bool devam = true;
@@ -96,7 +101,9 @@ namespace Global
                 }
             }
         }
+        #endregion
 
+        #region Close
         public void Close()
         {
             try
@@ -116,7 +123,9 @@ namespace Global
             }
 
         }
+        #endregion
 
+        #region Send_data
         public void Send_data(string data, bool hepsi, List<string> EndpoinListt)
         {
             try
@@ -157,8 +166,7 @@ namespace Global
             }
 
         }
+        #endregion
 
     }
-
-
 }

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Global\Global.csproj" />
+    <ProjectReference Include="..\MSSQLDB\MSSQLDB.csproj" />
   </ItemGroup>
 
 </Project>
